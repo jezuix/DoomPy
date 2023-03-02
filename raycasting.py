@@ -2,12 +2,13 @@ import pygame as pg
 import math
 from settings import *
 
+
 class RayCasting:
     def __init__(self, game):
         self.game = game
         self.ray_casting_result = []
         self.objects_to_render = []
-        self.textures = self.game.object_render.wall_textures
+        self.textures = self.game.object_renderer.wall_textures
 
     def get_objects_to_render(self):
         self.objects_to_render = []
@@ -33,10 +34,9 @@ class RayCasting:
 
     def ray_cast(self):
         self.ray_casting_result = []
+        texture_vert, texture_hor = 1, 1
         ox, oy = self.game.player.pos
         x_map, y_map = self.game.player.map_pos
-
-        texture_vert, texture_hor = 1, 1
 
         ray_angle = self.game.player.angle - HALF_FOV + 0.0001
         for ray in range(NUM_RAYS):
@@ -48,7 +48,7 @@ class RayCasting:
 
             depth_hor = (y_hor - oy) / sin_a
             x_hor = ox + depth_hor * cos_a
-            
+
             delta_depth = dy / sin_a
             dx = delta_depth * cos_a
 
@@ -73,7 +73,7 @@ class RayCasting:
             for i in range(MAX_DEPTH):
                 tile_vert = int(x_vert), int(y_vert)
                 if tile_vert in self.game.map.world_map:
-                    texture_ver = self.game.map.world_map[tile_vert]
+                    texture_vert = self.game.map.world_map[tile_vert]
                     break
                 x_vert += dx
                 y_vert += dy
@@ -92,23 +92,14 @@ class RayCasting:
             # remove fishbowl effect
             depth *= math.cos(self.game.player.angle - ray_angle)
 
-            # draw for debug
-            # pg.draw.line(self.game.screen, 'yellow', (100 * ox, 100 * oy),
-            #             (100 * ox + 100 * depth * cos_a, 100 * oy + 100 * depth * sin_a), 2)
-
             # projection
             proj_height = SCREEN_DIST / (depth + 0.0001)
-
-            # draw walls
-            # color = [255 / (1 + depth ** 5 * 0.00002)] * 3
-            # pg.draw.rect(self.game.screen, color,
-            #             (ray * SCALE, HALF_HEIGHT - proj_height // 2, SCALE, proj_height))
 
             # ray casting result
             self.ray_casting_result.append((depth, proj_height, texture, offset))
 
             ray_angle += DELTA_ANGLE
 
-    def upgrade(self):
+    def update(self):
         self.ray_cast()
         self.get_objects_to_render()

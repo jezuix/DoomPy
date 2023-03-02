@@ -5,7 +5,7 @@ class ObjectRender:
     def __init__(self, game):
         self.game = game
         self.screen = game.screen
-        self.wall_textures = self.load_wall_texture()
+        self.wall_textures = self.load_wall_textures()
 
     def draw(self):
         self.render_game_object()
@@ -20,7 +20,7 @@ class ObjectRender:
         texture = pg.image.load(path).convert_alpha()
         return pg.transform.scale(texture, res)
 
-    def load_wall_texture(self):
+    def load_wall_textures(self):
         return {
             1: self.get_texture('resources/textures/1.png'),
             2: self.get_texture('resources/textures/2.png'),
